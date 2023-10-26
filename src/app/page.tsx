@@ -1,6 +1,8 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { AuthButton } from './components/auth-button'
+import { Redirect } from 'next'
+
+import { AuthButtonServer } from './components/auth-button-server'
 export default async function Home () {
   const supabase = createServerComponentClient({ cookies })
   const { data: post } = await supabase.from('post').select('*')
@@ -8,7 +10,7 @@ export default async function Home () {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       hola twitter
       <pre>{JSON.stringify(post, null, 2)}</pre>
-      <AuthButton />
+      <AuthButtonServer />
     </main>
   )
 }
