@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
 import './globals.css'
+import type { Metadata } from 'next'
 import { Providers } from './providers'
 
 export const metadata: Metadata = {
-  title: 'X Clone',
-  description: 'Generado moviendo las manintas'
+  title: 'Clon de Twitter',
+  description: 'Generado moviendo las manitas'
 }
 
 export default function RootLayout ({
