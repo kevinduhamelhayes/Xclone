@@ -5,16 +5,28 @@ import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
 import { revalidatePath } from 'next/cache'
 
 export const addPost = async (formData: FormData) => {
-  const content = formData.get('content')
+  const content = formData.get('content')?.toString().trim()
 
-  if (content === null) return
+  if (!content) {
+    console.error('El contenido está vacío')
+    return { error: 'El contenido está vacío' }
+  }
 
-  const supabase = createServerActionClient({ cookies })
-  // revisar si el usuario realmene está autentificado
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user === null) return
+  try {
+    const supabase = createServerActionClient({ cookies })
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-  await supabase.from('posts').insert({ content, user_id: user.id })
+    if (userError) throw new Error('Error al obtener el usuario')
+    if (!user) return { error: 'Usuario no encontrado' }
 
-  revalidatePath(`/?content=${content.toString()}`)
+    const { error: insertError } = await supabase.from('posts').insert({ content, user_id: user.id })
+    if (insertError) throw new Error('Error al insertar el post')
+
+    revalidatePath(`/?content=${encodeURIComponent(content)}`)
+    return { success: true }
+  } catch (err) {
+    console.error(err)
+    return { error: err.message }
+  }
 }
+
